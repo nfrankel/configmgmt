@@ -9,7 +9,7 @@
     </parent>
     <groupId>com.exoscale.labs.configmgmt</groupId>
     <artifactId>demo</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -18,6 +18,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-kubernetes-config</artifactId>
+            <version>1.0.1.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

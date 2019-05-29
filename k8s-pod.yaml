@@ -25,36 +25,47 @@ metadata:
   labels:
     name: app
 spec:
+  serviceAccountName: spring-boot
   containers:
     - name: config-mgmt
-      image: configmgmt:1.0.0
+      image: configmgmt:1.1.0
       imagePullPolicy: Never
       ports:
         - containerPort: 8080
-      volumeMounts:
-        - name: config
-          mountPath: /config
-          readOnly: true
-  initContainers:
-    - name: git-clone
-      image: alpine/git:1.0.4
-      command: ['/bin/sh', '-c']
-      args: ['git clone --branch $(props.version) https://github.com/nfrankel/configmgmt-properties.git && mv configmgmt-properties/$(props.env)/* /config']
-      volumeMounts:
-        - name: config
-          mountPath: /config
-      envFrom:
-        - configMapRef:
-            name: clone-props
-  volumes:
-    - name: config
-      emptyDir: {}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: clone-props
+  name: application
   namespace: cfgmgmt
 data:
-  props.version: v1.0.0
-  props.env: stg
+  app.env.label: Staging
+  app.env.color: orange
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spring-boot
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: map-reader
+rules:
+  - apiGroups: [""]
+    resources: ["maps", "pods"]
+    verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-maps
+  namespace: cfgmgmt
+subjects:
+  - kind: ServiceAccount
+    name: spring-boot
+    apiGroup: ""
+roleRef:
+  kind: Role
+  name: map-reader
+  apiGroup: rbac.authorization.k8s.io
